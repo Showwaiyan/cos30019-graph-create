@@ -298,17 +298,16 @@ function parseGraph(text) {
 function exportGraph(graph) {
     let out = [];
 
-    out.push(`${graph.startNode ?? ''} // Starting node`);
+    out.push(`${graph.startNode ?? ''}`);
 
-    out.push(`${graph.destNodes.join(';')} // Destination nodes`);
+    out.push(`${graph.destNodes.join(';')}`);
 
     graph.nodes.forEach(n => {
         out.push(`${n.id}:(${n.x},${n.y})`);
     });
 
-    graph.edges.forEach((e, idx) => {
-        let suffix = idx === 0 ? ' // list of edges' : '';
-        out.push(`${e.from},${e.to},${e.cost}${suffix}`);
+    graph.edges.forEach((e) => {
+        out.push(`${e.from},${e.to},${e.cost}`);
     });
 
     return out.join('\n');
