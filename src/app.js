@@ -58,18 +58,81 @@ class Renderer {
         this.svg = svgElement;
         this.nodesLayer = svgElement.querySelector('#nodes-layer');
         this.edgesLayer = svgElement.querySelector('#edges-layer');
+        this.axisLayer = svgElement.querySelector('#axis-layer');
         this.graph = graphState;
+        this.centerOffset = { x: 0, y: 0 };
     }
 
     getVisualCoords(x, y) {
         const h = this.svg.clientHeight || 500;
+        const graphCenterX = (x + this.centerOffset.x) * GRID_SIZE;
+        const graphCenterY = (y + this.centerOffset.y) * GRID_SIZE;
         return {
-            vx: x * GRID_SIZE,
-            vy: h - (y * GRID_SIZE)
+            vx: graphCenterX,
+            vy: h - graphCenterY
         };
     }
 
+    renderAxes() {
+        const h = this.svg.clientHeight || 500;
+        const w = this.svg.clientWidth || 800;
+        
+        this.axisLayer.innerHTML = '';
+        
+        const yAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        yAxis.setAttribute("x1", 0);
+        yAxis.setAttribute("y1", h);
+        yAxis.setAttribute("x2", 0);
+        yAxis.setAttribute("y2", 0);
+        yAxis.setAttribute("stroke", "#999");
+        yAxis.setAttribute("stroke-width", "2");
+        yAxis.setAttribute("stroke-dasharray", "5,5");
+        this.axisLayer.appendChild(yAxis);
+        
+        const xAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        xAxis.setAttribute("x1", 0);
+        xAxis.setAttribute("y1", h);
+        xAxis.setAttribute("x2", w);
+        xAxis.setAttribute("y2", h);
+        xAxis.setAttribute("stroke", "#999");
+        xAxis.setAttribute("stroke-width", "2");
+        xAxis.setAttribute("stroke-dasharray", "5,5");
+        this.axisLayer.appendChild(xAxis);
+        
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", 10);
+        label.setAttribute("y", h - 10);
+        label.setAttribute("fill", "#666");
+        label.setAttribute("font-size", "12");
+        label.textContent = "0";
+        this.axisLayer.appendChild(label);
+    }
+
+    centerGraph() {
+        if (this.graph.nodes.length === 0) return;
+        
+        const xs = this.graph.nodes.map(n => n.x);
+        const ys = this.graph.nodes.map(n => n.y);
+        const minX = Math.min(...xs);
+        const maxX = Math.max(...xs);
+        const minY = Math.min(...ys);
+        const maxY = Math.max(...ys);
+        
+        const graphCenterX = (minX + maxX) / 2;
+        const graphCenterY = (minY + maxY) / 2;
+        
+        const h = this.svg.clientHeight || 500;
+        const w = this.svg.clientWidth || 800;
+        
+        const viewportCenterX = w / 2 / GRID_SIZE;
+        const viewportCenterY = h / 2 / GRID_SIZE;
+        
+        this.centerOffset.x = viewportCenterX - graphCenterX;
+        this.centerOffset.y = viewportCenterY - graphCenterY;
+    }
+
     render(selectedNodeId = null) {
+        this.renderAxes();
         this.nodesLayer.innerHTML = '';
         this.edgesLayer.innerHTML = '';
 
@@ -356,6 +419,7 @@ fileImport.addEventListener('change', (e) => {
             graph.startNode = newGraph.startNode;
             graph.destNodes = newGraph.destNodes;
             graph.nextNodeId = newGraph.nextNodeId;
+            renderer.centerGraph();
             renderer.render();
             alert('Graph imported successfully!');
         } catch (err) {
