@@ -80,7 +80,9 @@ svg.addEventListener('click', (e) => {
 
 window.addEventListener('resize', () => renderer.render(selectedNodeForEdge));
 
-renderer.render();
+requestAnimationFrame(() => {
+    renderer.render();
+});
 
 window.appState = { graph, renderer, exportGraph, parseGraph };
 
