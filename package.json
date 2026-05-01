@@ -1,0 +1,27 @@
+{
+  "name": "cos30019-graph-create",
+  "version": "1.0.0",
+  "description": "Graph creation for Swinburne cos30019-assignment-2a course that let you create graph and export .txt file shown as instruction in assignment",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Showwaiyan/cos30019-graph-create.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Showwaiyan/cos30019-graph-create/issues"
+  },
+  "homepage": "https://github.com/Showwaiyan/cos30019-graph-create#readme",
+  "devDependencies": {
+    "jest": "^30.3.0"
+  }
+}
