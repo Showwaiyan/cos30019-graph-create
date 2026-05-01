@@ -110,11 +110,24 @@ class Renderer {
             const mx = (fromV.vx + toV.vx) / 2;
             const my = (fromV.vy + toV.vy) / 2;
             text.setAttribute("x", mx);
-            text.setAttribute("y", my - 8);
+            text.setAttribute("y", my);
             text.textContent = edge.cost;
             text.setAttribute("text-anchor", "middle");
+            text.setAttribute("dominant-baseline", "middle");
+
+            // Background rect for cost text (hidden by default)
+            const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            bgRect.setAttribute("x", mx - 12);
+            bgRect.setAttribute("y", my - 11);
+            bgRect.setAttribute("width", 24);
+            bgRect.setAttribute("height", 18);
+            bgRect.setAttribute("fill", "white");
+            bgRect.setAttribute("rx", 3);
+            bgRect.style.opacity = "0";
+            bgRect.classList.add('cost-bg');
 
             g.appendChild(line);
+            g.appendChild(bgRect);
             g.appendChild(text);
             this.edgesLayer.appendChild(g);
         });
@@ -135,6 +148,27 @@ class Renderer {
 
             const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
             text.textContent = node.id;
+
+            // Hover events for highlighting connected edges
+            g.addEventListener('mouseenter', () => {
+                g.classList.add('hovered');
+                // Highlight all connected edges
+                this.edgesLayer.querySelectorAll('.edge').forEach(edgeG => {
+                    const from = parseInt(edgeG.dataset.from);
+                    const to = parseInt(edgeG.dataset.to);
+                    if (from === node.id || to === node.id) {
+                        edgeG.classList.add('connected');
+                    }
+                });
+            });
+            
+            g.addEventListener('mouseleave', () => {
+                g.classList.remove('hovered');
+                // Reset all edges
+                this.edgesLayer.querySelectorAll('.edge').forEach(edgeG => {
+                    edgeG.classList.remove('connected');
+                });
+            });
 
             g.appendChild(circle);
             g.appendChild(text);
@@ -240,7 +274,7 @@ svg.addEventListener('click', (e) => {
     const nodeGroup = target.closest('.node');
     const edgeGroup = target.closest('.edge');
 
-    if (currentTool === 'addNode' && !nodeGroup && !edgeGroup) {
+    if ((currentTool === 'addNode' || currentTool === 'select') && !nodeGroup && !edgeGroup) {
         const rect = svg.getBoundingClientRect();
         const cx = e.clientX - rect.left;
         const cy = e.clientY - rect.top;
@@ -255,7 +289,9 @@ svg.addEventListener('click', (e) => {
     else if (nodeGroup) {
         const id = parseInt(nodeGroup.dataset.id, 10);
 
-        if (currentTool === 'remove') {
+        if (currentTool === 'select') {
+            renderer.render(id); // Just highlight the selected node
+        } else if (currentTool === 'remove') {
             graph.removeNode(id);
             renderer.render();
         } else if (currentTool === 'setStart') {
