@@ -1,1 +1,14 @@
-body { margin: 0; font-family: sans-serif; }
+body { margin: 0; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden;}
+.toolbar { background: #f5f5f5; padding: 10px; display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; }
+.tools label, .actions button { margin-right: 15px; cursor: pointer; }
+.canvas-container { flex-grow: 1; position: relative; background: #fafafa; }
+#graph-svg { display: block; }
+.node circle { fill: #fff; stroke: #333; stroke-width: 2; cursor: pointer; }
+.node circle:hover { stroke: #007bff; }
+.node.start circle { stroke: #28a745; fill: #e8f5e9; stroke-width: 3; }
+.node.dest circle { stroke: #dc3545; fill: #fdeadd; stroke-width: 3; }
+.node.selected circle { stroke: #ffc107; fill: #fff3cd; }
+.node text { pointer-events: none; font-size: 12px; text-anchor: middle; dominant-baseline: central; }
+.edge line { stroke: #666; stroke-width: 2; cursor: pointer; }
+.edge line:hover { stroke: #dc3545; stroke-width: 4; }
+.edge text { pointer-events: none; font-size: 14px; fill: #333; font-weight: bold; background: white;}
