@@ -9,9 +9,9 @@ body { margin: 0; font-family: sans-serif; display: flex; flex-direction: column
 .node.dest circle { stroke: #dc3545; fill: #fdeadd; stroke-width: 3; }
 .node.selected circle { stroke: #ffc107; fill: #fff3cd; }
 .node.hovered circle { stroke: #9c27b0 !important; stroke-width: 4 !important; }
-.edge.connected line { stroke: #9c27b0 !important; stroke-width: 4 !important; }
-.edge.connected text { fill: #007bff !important; font-size: 16px !important; }
-.edge.connected .cost-bg { fill: #e3f2fd !important; stroke: #007bff !important; stroke-width: 1px !important; opacity: 1 !important; }
+.edge.connected line { stroke: #9c27b0 !important; }
+.edge.connected > text { fill: #9c27b0 !important; font-size: 16px !important; }
+.edge.connected .cost-bg { fill: #f3e5f5 !important; stroke: #9c27b0 !important; stroke-width: 1px !important; opacity: 1 !important; }
 .node text { pointer-events: none; font-size: 12px; text-anchor: middle; dominant-baseline: central; }
 .edge line { stroke: #666; stroke-width: 2; cursor: pointer; }
 .edge text { pointer-events: none; font-size: 14px; fill: #333; font-weight: bold; }

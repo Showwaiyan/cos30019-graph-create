@@ -144,16 +144,26 @@ class Renderer {
             const fromV = this.getVisualCoords(fromNode.x, fromNode.y);
             const toV = this.getVisualCoords(toNode.x, toNode.y);
 
+            const NODE_RADIUS = 15;
+            const dx = toV.vx - fromV.vx;
+            const dy = toV.vy - fromV.vy;
+            const len = Math.sqrt(dx*dx + dy*dy);
+            const startX = fromV.vx + (dx / len) * NODE_RADIUS;
+            const startY = fromV.vy + (dy / len) * NODE_RADIUS;
+            const endX = toV.vx - (dx / len) * NODE_RADIUS;
+            const endY = toV.vy - (dy / len) * NODE_RADIUS;
+
             const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
             g.classList.add('edge');
             g.dataset.from = edge.from;
             g.dataset.to = edge.to;
 
             const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute("x1", fromV.vx);
-            line.setAttribute("y1", fromV.vy);
-            line.setAttribute("x2", toV.vx);
-            line.setAttribute("y2", toV.vy);
+            line.setAttribute("x1", startX);
+            line.setAttribute("y1", startY);
+            line.setAttribute("x2", endX);
+            line.setAttribute("y2", endY);
+            line.setAttribute("class", "edge-line");
             line.setAttribute("marker-end", "url(#arrowhead)");
 
             const isBidirectional = this.graph.edges.some(e => e.from === edge.to && e.to === edge.from);
@@ -161,22 +171,23 @@ class Renderer {
                 const dx = toV.vx - fromV.vx;
                 const dy = toV.vy - fromV.vy;
                 const len = Math.sqrt(dx*dx + dy*dy);
-                const nx = -dy / len * 5;
-                const ny = dx / len * 5;
-                line.setAttribute("x1", fromV.vx + nx);
-                line.setAttribute("y1", fromV.vy + ny);
-                line.setAttribute("x2", toV.vx + nx);
-                line.setAttribute("y2", toV.vy + ny);
+                const nx = -dy / len * 8;
+                const ny = dx / len * 8;
+                line.setAttribute("x1", startX + nx);
+                line.setAttribute("y1", startY + ny);
+                line.setAttribute("x2", endX + nx);
+                line.setAttribute("y2", endY + ny);
             }
 
             const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            const mx = (fromV.vx + toV.vx) / 2;
-            const my = (fromV.vy + toV.vy) / 2;
+            const mx = (startX + endX) / 2;
+            const my = (startY + endY) / 2;
             text.setAttribute("x", mx);
             text.setAttribute("y", my);
             text.textContent = edge.cost;
             text.setAttribute("text-anchor", "middle");
             text.setAttribute("dominant-baseline", "middle");
+            text.style.fill = "#333";
 
             // Background rect for cost text (hidden by default)
             const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -221,6 +232,10 @@ class Renderer {
                     const to = parseInt(edgeG.dataset.to);
                     if (from === node.id || to === node.id) {
                         edgeG.classList.add('connected');
+                        const line = edgeG.querySelector('.edge-line');
+                        if (line) {
+                            line.setAttribute('marker-end', 'url(#arrowhead-connected)');
+                        }
                     }
                 });
             });
@@ -230,6 +245,10 @@ class Renderer {
                 // Reset all edges
                 this.edgesLayer.querySelectorAll('.edge').forEach(edgeG => {
                     edgeG.classList.remove('connected');
+                    const line = edgeG.querySelector('.edge-line');
+                    if (line) {
+                        line.setAttribute('marker-end', 'url(#arrowhead)');
+                    }
                 });
             });
 
